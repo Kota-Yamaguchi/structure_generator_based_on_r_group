@@ -23,9 +23,9 @@ from rdkit.ML.Descriptors import MoleculeDescriptors
 warnings.filterwarnings("ignore")
 
 
-def generate_structure():
+def generate_structure(target_y_value):
     with st.spinner("モデルをロード中..."):
-        target_y_value = [1, -60, 30]  # y-target for inverse analysis
+        # target_y_value = [1, -60, 30]  # y-target for inverse analysis
 
         dataset = pd.read_csv(
             "molecules_with_multi_y.csv", index_col=0

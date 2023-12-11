@@ -11,21 +11,33 @@ from structure_generator_based_on_r_group_ga_multi_y_gtmr import generate_struct
 # 目標範囲を設定するための関数
 def input_target_ranges():
     st.subheader("目標範囲の設定")
-    target_ranges = pd.DataFrame(
-        columns=["y1", "y2", "y3"], index=["lower_limit", "upper_limit"]
-    )
+    #    target_ranges で配列準備
+    target_ranges = []
 
     # 目標範囲の入力フォーム
-    for column in target_ranges.columns:
-        cols = st.columns(len(target_ranges.columns))
-        lower, upper = st.slider(
-            f"範囲 for {column}",
-            min_value=0.0,  # スライダーの最小値
-            max_value=100.0,  # スライダーの最大値
-            value=(0.0, 100.0),  # 初期値
-        )
-        target_ranges.at["lower_limit", column] = lower
-        target_ranges.at["upper_limit", column] = upper
+    default_values = [1.0, -60.0, 30.0]  # デフォルト値のリスト
+
+    value1 = st.slider(
+        f"水溶解度",
+        min_value=-100.0,  # スライダーの最小値
+        max_value=100.0,  # スライダーの最大値
+        value=default_values[0],  # 初期値
+    )
+    value2 = st.slider(
+        f"仮想物性値1",
+        min_value=-100.0,  # スライダーの最小値
+        max_value=100.0,  # スライダーの最大値
+        value=default_values[1],  # 初期値
+    )
+    value3 = st.slider(
+        f"仮想物性値2",
+        min_value=-100.0,  # スライダーの最小値
+        max_value=100.0,  # スライダーの最大値
+        value=default_values[2],  # 初期値
+    )
+    target_ranges.append(value1)
+    target_ranges.append(value2)
+    target_ranges.append(value3)
     return target_ranges
 
 
@@ -39,16 +51,36 @@ def convert_smiles_to_mol(smiles):
 # 化学構造を生成する関数
 def generate_structures(target_ranges):
     number_of_structures = 10  # デモのために数を減らす
-    # ... ここに構造生成コードを組み込む ...
-    # generated_structures = ["CCO", "CNC"]  # デモのためにダミーの構造
-    # # 生成した構造をファイルに書き出す
-    # str_ = "\n".join(generated_structures)
-    # with tempfile.NamedTemporaryFile(delete=False, suffix=".smi") as tmpfile:
-    #     writer = open(tmpfile.name, "w")
-    #     writer.write(str_)
-    #     writer.close()
-    #     return tmpfile.name
-    generated_data = generate_structure()
+    data = {
+        "smiles": [
+            "C=CC1CN2CCC1CC2C1C(NCC(OC)OC)C1(C)C",
+            "C=CC1CN2CCC1CC2C1C(c2ccc3c(c2)OCO3)C1(C)C",
+            "C=CC1CN2CCC1CC2C1C(C2(CC)C(=O)NC(=S)NC2=O)C1(C)C",
+            "CC(C)CCOC1C(C(CCCl)c2ccccc2)C1(C)C",
+            "CC1(C)C(CNC(=O)c2ccccc2)C1C1CCCCC1=O",
+            "C=CC1CN2CCC1CC2C1C(Nc2ccncc2S(O)(O)NC(=O)NC(C)C)C1(C)C",
+            "CCCC(C)Nc1ccccc1C1(CBr)OCCO1",
+            "CCC=C1CCC2C3CCC4CC(c5ccccc5NC(C#N)c5nc(C)c(N=Nc6c(Cl)cc(Cl)cc6Cl)s5)CCC4(C)C3CCC12C",
+            "CC(NC(CCc1ccccc1)C(=O)O)C(=O)c1ccccc1NCC1=C(C=NO)CCC1",
+            "CC(=O)Nc1ccccc1CCNc1ccccc1NCc1ccccc1C",
+        ],
+        "value": [
+            0.0807,
+            0.0792,
+            0.0561,
+            0.0517,
+            0.052,
+            0.0524,
+            0.0552,
+            0.0192,
+            0.0315,
+            0.0421,
+        ],
+    }
+    print(target_ranges)
+    df = pd.DataFrame(data)
+    # generated_data = df
+    generated_data = generate_structure(target_ranges)
     st.dataframe(generated_data[:number_of_structures])
     for smiles in generated_data[:number_of_structures].index:
         convert_smiles_to_mol(smiles)
